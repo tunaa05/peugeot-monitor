@@ -1,0 +1,34 @@
+name: Peugeot Leasing Monitor
+
+on:
+  schedule:
+    # Run every 30 minutes
+    - cron: '*/30 * * * *'
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+      
+      - name: Run monitor (single check)
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          MIN_PRICE: ${{ secrets.MIN_PRICE }}
+          MAX_PRICE: ${{ secrets.MAX_PRICE }}
+          KM_ALLOWANCE: ${{ secrets.KM_ALLOWANCE }}
+          CHECK_INTERVAL: ${{ secrets.CHECK_INTERVAL }}
+        run: python -c "from monitor import check_for_new_offers; check_for_new_offers()"
