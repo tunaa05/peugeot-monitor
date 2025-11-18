@@ -255,8 +255,13 @@ def scrape_all_offers() -> List[Dict]:
     
     while True:
         try:
-            # Try to get page with pagination parameter
-            url = f"{base_url}?page={page}" if page > 1 else base_url
+            # Build URL with pagination (append &page=X if URL already has query parameters)
+            if page == 1:
+                url = base_url
+            else:
+                # Check if URL already has query parameters
+                separator = '&' if '?' in base_url else '?'
+                url = f"{base_url}{separator}page={page}"
             
             logger.info(f"Scraping page {page}: {url}")
             
@@ -400,7 +405,13 @@ def send_discord_notification(offer: Dict):
             }
         }
         
+        # Add mention if Discord user ID is configured
+        content = ""
+        if config.DISCORD_USER_ID and config.DISCORD_USER_ID.strip():
+            content = f"<@{config.DISCORD_USER_ID.strip()}>"
+        
         payload = {
+            "content": content,
             "embeds": [embed]
         }
         
@@ -440,24 +451,20 @@ def check_for_new_offers():
         page = 1
         base_url = config.STORE_URL
         
-        # Build URL with filters to reduce pages to scrape
-        # URL parameters from the website:
-        # - leasingp: max monthly price (€)
-        # - order: sort order (1 = price ascending)
-        # - radius: search radius in km
-        # Format: ?leasingp=120&order=1&radius=50
-        price_filter_params = f"leasingp={int(config.MAX_PRICE)}&order=1&radius=50"
-        base_url_with_filter = f"{base_url}?{price_filter_params}"
+        # URL already contains all filters: 24 months / 15,000 km and 24 months / 20,000 km, max price 151€, radius 50km
+        # No need to add additional filters
         
         while True:
             try:
-                # Build URL with pagination and price filter
+                # Build URL with pagination (append &page=X if URL already has query parameters)
                 if page == 1:
-                    url = base_url_with_filter
+                    url = base_url
                 else:
-                    url = f"{base_url_with_filter}&page={page}"
+                    # Check if URL already has query parameters
+                    separator = '&' if '?' in base_url else '?'
+                    url = f"{base_url}{separator}page={page}"
                 
-                logger.info(f"Scraping page {page} (filtered: max price €{config.MAX_PRICE}, radius 50km): {url}")
+                logger.info(f"Scraping page {page}: {url}")
                 
                 headers = {
                     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
@@ -605,3 +612,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
