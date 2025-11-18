@@ -27,8 +27,10 @@ jobs:
       - name: Run monitor (single check)
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          DISCORD_USER_ID: ${{ secrets.DISCORD_USER_ID }}
           MIN_PRICE: ${{ secrets.MIN_PRICE }}
           MAX_PRICE: ${{ secrets.MAX_PRICE }}
           KM_ALLOWANCE: ${{ secrets.KM_ALLOWANCE }}
           CHECK_INTERVAL: ${{ secrets.CHECK_INTERVAL }}
         run: python -c "from monitor import check_for_new_offers; check_for_new_offers()"
+
