@@ -19,8 +19,8 @@ _min_price = os.getenv("MIN_PRICE", "50")
 _min_price = _min_price if _min_price and _min_price.strip() else "50"
 MIN_PRICE = float(_min_price)
 
-_max_price = os.getenv("MAX_PRICE", "151")
-_max_price = _max_price if _max_price and _max_price.strip() else "151"
+_max_price = os.getenv("MAX_PRICE", "200")
+_max_price = _max_price if _max_price and _max_price.strip() else "200"
 MAX_PRICE = float(_max_price)
 
 # Yearly kilometer allowance (km per year)
@@ -34,8 +34,9 @@ _check_interval = _check_interval if _check_interval and _check_interval.strip()
 CHECK_INTERVAL = int(_check_interval)
 
 # Peugeot store URL with filters: 24 months / 15,000 km and 24 months / 20,000 km, max price 151€, radius 50km
-STORE_URL = "https://financing.peugeot.store/bestand?leasingp=151&combination=24_15000%2C24_20000&radius=50"
+STORE_URL = "https://financing.peugeot.store/bestand"
 
 # Storage file for tracking seen offers
 OFFERS_FILE = "offers.json"
+
 
